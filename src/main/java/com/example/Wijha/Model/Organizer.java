@@ -2,7 +2,9 @@ package com.example.Wijha.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,11 +20,11 @@ public class Organizer
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String title;
+    private String name;
 
-    private String description;
-
-    private LocalDateTime eventDate;
+    @Email
+    @UniqueElements
+    private String email;
 
     private LocalDateTime creationDate;
 
@@ -30,7 +32,7 @@ public class Organizer
     @JsonIgnore
     private List<Event> events;
 
-    @OneToOne
-    @JsonIgnore
-    private Venue venue;
+
+
+
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -20,17 +21,11 @@ public class Booking
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private enum status
-    {
-        booked,
-        unbooked,
-        reserved
-    }
+    private String status;
 
-    @OneToOne
-    @MapsId
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "booking")
     @JsonIgnore
-    private BookingSeat bookingSeat;
+    private List<BookingSeat> bookingSeats;
 
     private LocalDateTime booked_at;
 
@@ -42,7 +37,7 @@ public class Booking
     @JsonIgnore
     private Event event;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL,mappedBy = "booking")
     @JsonIgnore
     private Payment payment;
 }

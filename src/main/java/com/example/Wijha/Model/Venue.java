@@ -26,5 +26,5 @@ public class Venue
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "venue")
     @JsonIgnore
-    private Organizer organizer;
+    private Event event;
 }

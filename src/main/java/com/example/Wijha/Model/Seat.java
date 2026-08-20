@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,19 +22,13 @@ public class Seat
 
     private Double price;
 
-    private enum status
-    {
-        PAID,
-        UNPAID,
-        RESERVED
-    }
+    private String status;
 
     @ManyToOne
     @JsonIgnore
     private Event event;
 
-    @OneToOne
-    @MapsId
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "seat")
     @JsonIgnore
-    private Booking booking;
+    private List<BookingSeat> bookingSeat;
 }

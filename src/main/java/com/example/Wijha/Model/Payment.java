@@ -16,21 +16,17 @@ public class Payment
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer paymentId;
+    private Integer id;
 
     private Float amount;
 
-    private enum status
-    {
-        PAID,
-        UNPAID
-    }
+    private String status;
 
-    private Integer providerRefrence;
+    private Integer providerReference;
 
     private LocalDateTime creationDate;
 
-    @OneToOne(cascade = CascadeType.ALL,mappedBy = "payment")
+    @OneToOne
     @JsonIgnore
     private Booking booking;
 }

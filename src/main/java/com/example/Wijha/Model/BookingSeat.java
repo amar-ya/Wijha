@@ -1,9 +1,12 @@
 package com.example.Wijha.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -15,11 +18,11 @@ public class BookingSeat
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(cascade = CascadeType.ALL,mappedBy = "bookingseat")
-    @PrimaryKeyJoinColumn
+    @ManyToOne
+    @JsonIgnore
     private Booking booking;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "bookingseat")
-    @PrimaryKeyJoinColumn
+    @ManyToOne
+    @JsonIgnore
     private Seat seat;
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -18,6 +19,13 @@ public class Event
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String title;
+
+    private String description;
+
+    private LocalDateTime event_date;
+
+    private LocalDateTime creation_date;
 
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "event",orphanRemoval = true)
@@ -26,4 +34,8 @@ public class Event
     @ManyToOne
     @JsonIgnore
     private Organizer organizer;
+
+    @OneToOne
+    @JsonIgnore
+    private Venue venue;
 }
