@@ -1,7 +1,5 @@
 package com.example.Wijha.Config.JWT;
 
-import com.example.Wijha.Model.Customer;
-import com.example.Wijha.Repository.CustomerRepository;
 import com.example.Wijha.Service.MyUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,12 +11,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -26,7 +24,6 @@ public class JwtFilter extends OncePerRequestFilter
 {
     private final JwtUtil jwtUtil;
     private final MyUserDetailService userDetailService;
-    private final CustomerRepository customerRepository;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -36,8 +33,8 @@ public class JwtFilter extends OncePerRequestFilter
             return true;
         }
 
-        return path.equals("/api/v1/auth/signup/customer")
-                || path.equals("/api/v1/auth/signup/expert")
+        return path.equals("/api/v1/auth/register/customer")
+                || path.equals("/api/v1/auth/register/organizer")
                 || path.equals("/api/v1/auth/login")
                 || path.startsWith("/public/");
     }
@@ -71,34 +68,29 @@ public class JwtFilter extends OncePerRequestFilter
         }
 
         try {
-            // Extract identity from token. (Typically sub=username or userId)
-            String username = jwtUtil.extractUsername(token);
+            // Extract identity from token. (sub = email)
+            String email = jwtUtil.extractUsername(token);
 
-            if (username == null || username.isBlank()) {
+            if (email == null || email.isBlank()) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT: missing subject");
                 return;
             }
 
-            Optional<Customer> userOpt = customerRepository.findUserByUserName(username);
-            if (userOpt.isEmpty()) {
-                // Do NOT throw application exception from a filter
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT: user not found");
-                return;
-            }
-
-            Customer user = userOpt.get();
-
-            // Validate token integrity/expiry/subject (implement this in JwtUtil)
+            // Validate token integrity/expiry/subject
             if (!jwtUtil.isValid(token)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 return;
             }
 
+            // Loads from either the customer or organizer repository, whichever matches
+            UserDetails user = userDetailService.loadUserByUsername(email);
+
             // Authenticate the request
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            user,               // principal (or user.getUsername())
-                            null              // credentials (never store password here)
+                            user,               // principal
+                            null,               // credentials (never store password here)
+                            user.getAuthorities()
                     );
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -107,7 +99,7 @@ public class JwtFilter extends OncePerRequestFilter
             filterChain.doFilter(request, response);
 
         } catch (Exception ex) {
-            // Catch ALL token parsing/validation failures and return 401 consistently.
+            // Catch ALL token parsing/validation/user lookup failures and return 401 consistently.
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired JWT");
         }
     }
