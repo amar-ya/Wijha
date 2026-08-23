@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,8 +22,11 @@ public class Organizer
     private String name;
 
     @Email
-    @UniqueElements
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @JsonIgnore
+    private String password;
 
     private LocalDateTime creationDate;
 

@@ -1,13 +1,12 @@
 package com.example.Wijha.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.UniqueElements;
 
-import java.awt.print.Book;
 import java.util.List;
 
 @Entity
@@ -21,10 +20,12 @@ public class Customer
     private Integer id;
 
     @Email
-    @UniqueElements
+    @Column(unique = true, nullable = false)
     String email;
 
     String name;
+
+    @JsonIgnore
     String password;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "customer",orphanRemoval = true)

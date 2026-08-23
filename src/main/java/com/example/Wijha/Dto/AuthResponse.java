@@ -1,0 +1,15 @@
+package com.example.Wijha.Dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class AuthResponse
+{
+    private String token;
+    private String role;
+    private Integer id;
+    private String name;
+    private String email;
+}
