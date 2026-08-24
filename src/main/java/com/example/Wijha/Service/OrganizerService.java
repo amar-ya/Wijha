@@ -10,4 +10,6 @@ import org.springframework.stereotype.Service;
 public class OrganizerService
 {
     private final OrganizerRepository organizerRepository;
+
+
 }
